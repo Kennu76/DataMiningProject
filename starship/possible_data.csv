@@ -1,0 +1,2 @@
+botid,timestamp,coordinates_long,coordinates_lat,accel_vec_x,accel_vec_y,accel_vec_z,standstill_detected
+6D80,1498913579,24.663108,59.397973,-0.004735172260552645,0.007237337529659271,-1.00299870967865,true
