@@ -1,6 +1,6 @@
 import json
 
-sensor_path = '/Users/tonis.kasekamp/other/data/DataMiningProject/starship_sensors_data/dt=2017-07-02/ahrs.0.json'
+sensor_path = '/Users/tonis.kasekamp/other/data/DataMiningProject/starship_sensors_data/dt=2017-07-03/ahrs.25.json'
 sensor_data = open(sensor_path)
 
 i = 1
