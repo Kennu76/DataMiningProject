@@ -13,7 +13,7 @@ library(igraph)
 library(leaflet)
 
 #################################
-## Sparial extent of
+## Spatial extent of
 ## OSM road data
 #################################
 
