@@ -1,18 +1,18 @@
 import json
 import csv
 
-sensor_path = '/Users/tonis.kasekamp/other/data/DataMiningProject/starship/example_sensor_data.json'
+# sensor_path = '/Users/tonis.kasekamp/other/data/DataMiningProject/starship/example_sensor_data.json'
 # final = '/Users/tonis.kasekamp/other/data/DataMiningProject/starship_sensors_data/dt=2017-07-03/final'
-# other_path = '/Users/tonis.kasekamp/other/data/DataMiningProject/starship_sensors_data/dt=2017-07-03/ahrs.25.json'
-sensor_data = open(sensor_path)
+other_path = '/Users/tonis.kasekamp/other/data/DataMiningProject/starship_sensors_data/dt=2017-07-03/ahrs.25.json'
+sensor_data = open(other_path)
 
 # sensor_path
-# location_path = '/Users/tonis.kasekamp/other/data/starship_localisation_data/tallinn_location_july.csv'
+location_path = '/Users/tonis.kasekamp/other/data/starship_localisation_data/tallinn_location_july.csv'
 loc_sample = '/Users/tonis.kasekamp/other/data/DataMiningProject/starship/tallinn_sample_1000.csv'
-loc_data = []
-with open(loc_sample) as f:
-    for line in f:
-        loc_data.append(line)
+
+# with open(location_path) as f:
+#     for line in f:
+#         loc_data.append(line)
 # loc_data = open(loc_sample)
 
 loc_data_filter = []
@@ -32,22 +32,28 @@ counter = 0
 # save result to file
 
 
-# for line in iter(loc_data):
-#     # if i == 10:
-#     #     break
-#     points = line.split(",")
-#     if
-#     if points[0] == '6D80':
-#         loc_data_filter.append(line)
+def filter_localisation(f):
+    suitable_bots = set([u'6E7', u'6E5', u'6D40'])
 
-# print(len(loc_data_filter))
-#
-# for line in iter(sensor_data):
-#     # print(line)
-#     json_line = json.loads(line)
-#     # print(json_line)
-#     if json_line["data"]['standstill_detected'] == False:
-#         print("stand")
+    array = []
+    min = 1499073283
+    max = 1499104501
+    for line in iter(f):
+        # if i == 10:
+        #     break
+        points = line.split(",")
+        # print points[0]
+        # bots.add(points[0])
+        # print(points[1])
+        if points[1] == 'timestamp':
+            continue
+        timestamp = int(float(points[1]))
+        if timestamp <= max and timestamp >= min:
+            if points[0] in suitable_bots:
+                # i = i + 1
+                array.append(points)
+    f.close()
+    return array
 
 
 def create_line(json_line, lat_long):
@@ -67,9 +73,9 @@ used_timestamps = set()
 
 def get_something(timestamp, botid, loc_data):
     global counter
-    for line in iter(loc_data):
-        points = line.split(",")
-        loc_time = get_timestamp(points[1])
+    for points in iter(loc_data):
+        # points = line.split(",")
+        loc_time = int(float(points[1]))
         # counter += 1
         # print(timestamp, loc_time, timestamp == loc_time)
         # print(str(botid), points[0])
@@ -95,10 +101,10 @@ def make_data():
         # print("iter")
         counter += 1
         json_line = json.loads(line)
-        timestamp = str(json_line["meta"]["secs"])
-        # if json_line["data"]['standstill_detected'] == True:
-        #     # ignore stanststill
-        #     continue
+        timestamp = json_line["meta"]["secs"]
+        if json_line["data"]['standstill_detected'] == True:
+            # ignore stanststill
+            continue
         if timestamp in used_timestamps:
             # ignore used seconds
             print("ignore", timestamp)
@@ -118,6 +124,9 @@ def make_data():
         writer.writerows(accumulator)
 
 
+loc_data = filter_localisation(open(location_path))
+print("location data len ", len(loc_data))
+print(loc_data[2])
 make_data()
 print(counter)
 print(used_timestamps)
