@@ -6,11 +6,6 @@
 
 library(tidyverse)
 library(osmar)
-# library(osrm)
-library(maptools)
-library(mapview)
-library(igraph)
-library(leaflet)
 
 #################################
 ## Spatial extent of
