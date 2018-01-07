@@ -35,9 +35,9 @@ road_quality$lat = nearest_nodes$lat
 
 road_quality = road_quality %>%
   group_by(lon,lat) %>%
-  summarise(quality = (((var(orientation_delta_z,na.rm=T)+1)*
-              (var(starship_data$accel_vec_z,na.rm=T)+1))^10000)/100) %>%
-  na.omit()
+  summarise(quality = var(orientation_delta_z,na.rm=T)) %>%
+  na.omit() %>%
+  mutate(quality = quality/max(quality))
 
 road_quality %>%
   ggplot() +

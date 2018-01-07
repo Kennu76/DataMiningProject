@@ -90,10 +90,12 @@ ui = bootstrapPage(
                      <a href='https://github.com/Kennu76'>Kevin Kanarbik</a><br>
                      <a href='https://github.com/TKasekamp'>Tõnis Kasekamp</a>"),
                 hr(),
-                textInput("from",NULL,"24.63152-59.42670"),
-                textInput("to",NULL,"24.56427-59.43534"),
+                textInput("from",NULL,"24.61358-59.44556",placeholder="lon-lat"),
+                textInput("to",NULL,"24.66345-59.42753",placeholder="lon-lat"),
                 checkboxInput("quality", c("Pavement quality"),T),
-                actionButton("submit","Route!",icon("gears"))
+                actionButton("submit","Route!",icon("gears")),
+                hr(),
+                HTML("<a href=''>",icon("github"),"</a>")
   )
 )
 
@@ -102,8 +104,8 @@ server = function(input,output,session){
     from = as.numeric(strsplit(input$from,"-")[[1]])
     to = as.numeric(strsplit(input$to,"-")[[1]])
     hway_start_node = local({
-      id = find(tln_roads, node(attrs(lon > (from[1]-0.002) & lon < (from[1]+0.002) &
-                                      lat > (from[2]-0.002) & lat < (from[2]+0.002))))
+      id = find(tln_roads, node(attrs(lon > (from[1]-0.0025) & lon < (from[1]+0.0025) &
+                                      lat > (from[2]-0.0025) & lat < (from[2]+0.0025))))
       id_table = tln_roads$nodes$attrs[tln_roads$nodes$attrs$id %in% id,c("id","lon","lat")]
       order = ((from[1] - id_table$lon)^2) + ((from[2] - id_table$lat)^2)
       id[order(order)][1]
@@ -120,17 +122,19 @@ server = function(input,output,session){
     
     gr_tln = as_igraph_mod(tln_roads,input$quality)
     
-    route = get.shortest.paths(gr_tln,
-                               from = as.character(hway_start_node),
-                               to = as.character(hway_end_node))[[1]]
+    route = shortest_paths(gr_tln,
+                           from = as.character(hway_start_node),
+                           to = as.character(hway_end_node),
+                           mode="all")[[1]]
     route_nodes = as.numeric(V(gr_tln)[route[[1]]]$name)
     route_ids = find_up(tln_roads, node(route_nodes))
     route_tln = subset(tln_roads, ids = route_ids)
     return(route_tln)
   })
   output$streetsOfTallinn = renderLeaflet({
-    scale = round(max(tln_lines$w,na.rm=T),0):round(min(tln_lines$w,na.rm=T),0)
-    mapview(tln_lines,
+    # scale = seq(round(max(tln_lines$w,na.rm=T),0),round(min(tln_lines$w,na.rm=T),0),length.out=10)
+    scale = seq(100,0,length.out=11)
+    mapview(tln_lines,trim=T,cex=NULL,popup=NULL,
             maxpixels = 1000,
             zcol = "w")@map %>%
       addTiles(options=tileOptions(minZoom=13, maxZoom=16)) %>%
@@ -138,8 +142,8 @@ server = function(input,output,session){
       addLegend("bottomleft",
                 colors = rev(mapviewPalette(name = "mapviewVectorColors")(length(scale))),
                 values = ~get("w"),
-                labels = scale,
-                title = "Vibration level",
+                labels = round(scale,2),
+                title = "Vibration level (%)",
                 opacity = 1)
   })
   
