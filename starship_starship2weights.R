@@ -44,7 +44,8 @@ road_quality_new =  road_quality %>%
 x <- road_quality_new$quality
 x <- (x-min(x))/(max(x)-min(x))
 road_quality_new$quality <- x
-road_quality_new %>%
+
+road_quality %>%
   ggplot() +
   geom_point(data=tallinn_nodes, aes(lon,lat),alpha=.1,size=.02) +
   geom_point(aes(lon,lat,color=quality)) +

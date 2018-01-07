@@ -59,7 +59,7 @@ tln_nodes = lapply(1:nrow(road_quality), function(x){
               road_quality$quality[x])
   }) %>% do.call(rbind.data.frame,.) %>%
   group_by(from_node_id) %>%
-  summarise(w = sum(w))
+  summarise(w = mean(w))
 
 # Way weights
 ways_weights = lapply(1:nrow(road_quality), function(x){
@@ -68,7 +68,7 @@ ways_weights = lapply(1:nrow(road_quality), function(x){
               road_quality$quality[x],T)
   }) %>% do.call(rbind.data.frame,.) %>%
   group_by(id) %>%
-  summarise(w = mean(w))
+  summarise(w = round(mean(w),2))
 
 ## Adding weight data for map application
 load("bumpy/tln_lines.Rda")
