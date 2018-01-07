@@ -5,6 +5,7 @@
 #################################
 
 library(tidyverse)
+#install.packages('osmar')
 library(osmar)
 
 #################################

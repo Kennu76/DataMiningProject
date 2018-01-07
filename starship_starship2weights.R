@@ -8,7 +8,8 @@ library(tidyverse)
 library(data.table)
 
 load("starship_data.Rda")
-load("bumpy/tln_roads.Rda")
+load("tln_roads.Rda")
+
 tallinn_nodes = tln_roads$nodes$attrs[c("lon","lat")]
 tallinn_nodes = tallinn_nodes[!duplicated(tallinn_nodes),]
 
@@ -33,16 +34,21 @@ nearest_nodes = data.frame(rbindlist(nearest_nodes))
 road_quality$lon = nearest_nodes$lon
 road_quality$lat = nearest_nodes$lat
 
-road_quality = road_quality %>%
+road_quality_new =  road_quality %>%
   group_by(lon,lat) %>%
-  summarise(quality = (((var(orientation_delta_z,na.rm=T)+1)*
-              (var(starship_data$accel_vec_z,na.rm=T)+1))^10000)/100) %>%
+  summarise(quality = (
+    ((var(orientation_delta_z,na.rm=T)+1)*
+      (var(starship_data$accel_vec_z,na.rm=T)+1))
+    ^10000)/100000) %>%
   na.omit()
-
-road_quality %>%
+x <- road_quality_new$quality
+x <- (x-min(x))/(max(x)-min(x))
+road_quality_new$quality <- x
+road_quality_new %>%
   ggplot() +
   geom_point(data=tallinn_nodes, aes(lon,lat),alpha=.1,size=.02) +
   geom_point(aes(lon,lat,color=quality)) +
-  theme_void()
+  theme_void()+
+  scale_color_gradient(low="yellow",high="red")
 
-save(road_quality,file="road_quality.Rda")
+save(road_quality_new,file="road_quality.Rda")
