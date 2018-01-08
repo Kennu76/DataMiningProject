@@ -8,3 +8,7 @@ Our goal is to study pavement quality in Tallinn using 1 month of Starship deliv
 
 
 * [The link to the presentation slide on the LIST OF PROJECTS slides](https://docs.google.com/presentation/d/1veA_WQcfRRx7hQnE8qklmsLYceWzQGrPHrieSEWqcaI/edit#slide=id.g2a57963548_104_0)
+
+### Image of poster
+
+![](https://github.com/Kennu76/DataMiningProject/blob/master/poster-1.jpg)
